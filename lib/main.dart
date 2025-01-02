@@ -15,6 +15,10 @@ void main() {
             backgroundColor: lightColorScheme.primaryContainer,
             foregroundColor: lightColorScheme.onPrimaryContainer,
             iconColor: lightColorScheme.onPrimaryContainer,
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 7),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
         ),
         textTheme: TextTheme().copyWith(

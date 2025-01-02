@@ -9,23 +9,51 @@ class HomeScreen extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            color: Colors.grey,
-            child: Text(
-              'Proxima Nova',
-              style: Theme.of(context).textTheme.titleLarge,
+          Center(
+            child: Container(
+              height: 200,
+              decoration: BoxDecoration(
+                image: DecorationImage(image: AssetImage('images/welcome.png')),
+              ),
             ),
           ),
-          ElevatedButton(
-            onPressed: () {},
-            child: Column(
-              children: [
-                Icon(Icons.camera),
-                Text('Camera', style: Theme.of(context).textTheme.labelSmall),
-              ],
-            ),
+          SizedBox(height: 10),
+          Text(
+            'Unggah wadai khas Banjar Anda untuk mengetahui nama dan masa berlakunya',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
-          Icon(Icons.access_time_filled),
+          SizedBox(height: 42),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {},
+                child: Column(
+                  children: [
+                    Icon(Icons.file_upload_outlined),
+                    Text(
+                      'Unggah Gambar',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(width: 62),
+              ElevatedButton(
+                onPressed: () {},
+                child: Column(
+                  children: [
+                    Icon(Icons.camera_alt_outlined),
+                    Text(
+                      'Ambil Gambar',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
