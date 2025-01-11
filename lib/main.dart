@@ -1,11 +1,18 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_wadai_detection/screens/home_screen.dart';
 import 'package:flutter_wadai_detection/theme.dart';
 
 final materialTheme = MaterialTheme(const TextTheme());
 final lightColorScheme = materialTheme.light().colorScheme;
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  final cameras = await availableCameras();
+  final firstCamera = cameras.first;
+
   runApp(
     MaterialApp(
       theme: materialTheme.light().copyWith(
@@ -64,7 +71,7 @@ void main() {
           color: lightColorScheme.onSurface,
         ),
       ),
-      home: const HomeScreen(),
+      home: HomeScreen(camera: firstCamera),
     ),
   );
 }

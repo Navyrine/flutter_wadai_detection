@@ -1,8 +1,17 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_wadai_detection/screens/camera_screen.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key, required this.camera});
 
+  final CameraDescription camera;
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +50,13 @@ class HomeScreen extends StatelessWidget {
               ),
               SizedBox(width: 62),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (ctx) => CameraScreen(camera: widget.camera),
+                    ),
+                  );
+                },
                 child: Column(
                   children: [
                     Icon(Icons.camera_alt_outlined),
