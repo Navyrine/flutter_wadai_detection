@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class ResultScreen extends StatelessWidget {
   const ResultScreen({super.key, required this.imagePath});
 
-  final String imagePath;
+  final File imagePath;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class ResultScreen extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               image: DecorationImage(
-                image: FileImage(File(imagePath)),
+                image: FileImage(imagePath),
                 fit: BoxFit.cover,
               ),
             ),

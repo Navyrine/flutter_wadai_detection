@@ -1,19 +1,14 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_wadai_detection/screens/camera_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_wadai_detection/provider/image_provider.dart';
+import 'package:flutter_wadai_detection/screens/result_screen.dart';
+import 'package:image_picker/image_picker.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key, required this.camera});
-
-  final CameraDescription camera;
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -37,7 +32,19 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  final croppedImage = await ref
+                      .read(imageProvider.notifier)
+                      .pickImage(ImageSource.gallery);
+
+                  if (croppedImage != null && context.mounted) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => ResultScreen(imagePath: croppedImage),
+                      ),
+                    );
+                  }
+                },
                 child: Column(
                   children: [
                     Icon(Icons.file_upload_outlined),
@@ -50,12 +57,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(width: 62),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (ctx) => CameraScreen(camera: widget.camera),
-                    ),
-                  );
+                onPressed: () async {
+                  final croppedImage = await ref
+                      .read(imageProvider.notifier)
+                      .pickImage(ImageSource.camera);
+
+                  if (croppedImage != null && context.mounted) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (ctx) => ResultScreen(imagePath: croppedImage),
+                      ),
+                    );
+                  }
                 },
                 child: Column(
                   children: [
