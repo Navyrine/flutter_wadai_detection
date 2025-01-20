@@ -45,7 +45,6 @@ class ImageNotifier extends StateNotifier<File?> {
     } catch (error) {
       throw Exception(error.toString());
     }
-    return null;
   }
 }
 

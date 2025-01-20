@@ -1,8 +1,12 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_wadai_detection/provider/image_provider.dart';
 import 'package:flutter_wadai_detection/screens/result_screen.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -33,16 +37,108 @@ class HomeScreen extends ConsumerWidget {
             children: [
               ElevatedButton(
                 onPressed: () async {
-                  final croppedImage = await ref
-                      .read(imageProvider.notifier)
-                      .pickImage(ImageSource.gallery);
+                  if (Platform.isAndroid) {
+                    final androidInfo = await DeviceInfoPlugin().androidInfo;
 
-                  if (croppedImage != null && context.mounted) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (ctx) => ResultScreen(imagePath: croppedImage),
-                      ),
-                    );
+                    if (androidInfo.version.sdkInt <= 31) {
+                      PermissionStatus galleryStatus =
+                          await Permission.storage.request();
+
+                      if (galleryStatus.isGranted) {
+                        final croppedImage = await ref
+                            .read(imageProvider.notifier)
+                            .pickImage(ImageSource.gallery);
+
+                        if (croppedImage != null && context.mounted) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (ctx) =>
+                                      ResultScreen(imagePath: croppedImage),
+                            ),
+                          );
+                        }
+                      } else if (galleryStatus.isDenied) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              action: SnackBarAction(
+                                label: 'Setting',
+                                onPressed: () {
+                                  openAppSettings();
+                                },
+                              ),
+                              content: Text('Gallery permission is required'),
+                            ),
+                          );
+                        }
+                      } else if (galleryStatus.isPermanentlyDenied) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              action: SnackBarAction(
+                                label: 'Setting',
+                                onPressed: () {
+                                  openAppSettings();
+                                },
+                              ),
+                              content: Text(
+                                'Gallery permission is permanently denied',
+                              ),
+                            ),
+                          );
+                        }
+                      }
+                    } else {
+                      PermissionStatus galleryStatus =
+                          await Permission.photos.request();
+
+                      if (galleryStatus.isGranted) {
+                        final croppedImage = await ref
+                            .read(imageProvider.notifier)
+                            .pickImage(ImageSource.gallery);
+
+                        if (croppedImage != null && context.mounted) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (ctx) =>
+                                      ResultScreen(imagePath: croppedImage),
+                            ),
+                          );
+                        }
+                      } else if (galleryStatus.isDenied) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              action: SnackBarAction(
+                                label: 'Setting',
+                                onPressed: () {
+                                  openAppSettings();
+                                },
+                              ),
+                              content: Text('Gallery permission is required'),
+                            ),
+                          );
+                        }
+                      } else if (galleryStatus.isPermanentlyDenied) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              action: SnackBarAction(
+                                label: 'Setting',
+                                onPressed: () {
+                                  openAppSettings();
+                                },
+                              ),
+                              content: Text(
+                                'Gallery permission is permanently denied',
+                              ),
+                            ),
+                          );
+                        }
+                      }
+                    }
                   }
                 },
                 child: Column(
@@ -58,16 +154,51 @@ class HomeScreen extends ConsumerWidget {
               SizedBox(width: 62),
               ElevatedButton(
                 onPressed: () async {
-                  final croppedImage = await ref
-                      .read(imageProvider.notifier)
-                      .pickImage(ImageSource.camera);
+                  PermissionStatus status = await Permission.camera.request();
 
-                  if (croppedImage != null && context.mounted) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (ctx) => ResultScreen(imagePath: croppedImage),
-                      ),
-                    );
+                  if (status.isGranted) {
+                    final croppedImage = await ref
+                        .read(imageProvider.notifier)
+                        .pickImage(ImageSource.camera);
+
+                    if (croppedImage != null && context.mounted) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder:
+                              (ctx) => ResultScreen(imagePath: croppedImage),
+                        ),
+                      );
+                    }
+                  } else if (status.isDenied) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          action: SnackBarAction(
+                            label: 'Setting',
+                            onPressed: () {
+                              openAppSettings();
+                            },
+                          ),
+                          content: Text('Camera permission is required'),
+                        ),
+                      );
+                    }
+                  } else if (status.isPermanentlyDenied) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          action: SnackBarAction(
+                            label: 'Setting',
+                            onPressed: () {
+                              openAppSettings();
+                            },
+                          ),
+                          content: Text(
+                            'Camera permission is permanently denied',
+                          ),
+                        ),
+                      );
+                    }
                   }
                 },
                 child: Column(
