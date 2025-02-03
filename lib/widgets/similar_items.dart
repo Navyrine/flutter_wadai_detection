@@ -30,7 +30,7 @@ class SimilarItems extends StatelessWidget {
             CircularPercentIndicator(
               radius: 30,
               lineWidth: 8,
-              percent: 0.7,
+              percent: itemPercentage / 100,
               backgroundColor: Theme.of(context).colorScheme.secondaryFixedDim,
               progressColor:
                   Theme.of(context).colorScheme.onSecondaryFixedVariant,

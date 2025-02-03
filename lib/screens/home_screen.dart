@@ -45,16 +45,17 @@ class HomeScreen extends ConsumerWidget {
                           await Permission.storage.request();
 
                       if (galleryStatus.isGranted) {
-                        final croppedImage = await ref
+                        final classificationResult = await ref
                             .read(imageProvider.notifier)
                             .pickImage(ImageSource.gallery);
 
-                        if (croppedImage != null && context.mounted) {
+                        if (classificationResult != null && context.mounted) {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder:
-                                  (ctx) =>
-                                      ResultScreen(imagePath: croppedImage),
+                                  (ctx) => ResultScreen(
+                                    imagePath: classificationResult,
+                                  ),
                             ),
                           );
                         }
@@ -94,16 +95,17 @@ class HomeScreen extends ConsumerWidget {
                           await Permission.photos.request();
 
                       if (galleryStatus.isGranted) {
-                        final croppedImage = await ref
+                        final classificationResult = await ref
                             .read(imageProvider.notifier)
                             .pickImage(ImageSource.gallery);
 
-                        if (croppedImage != null && context.mounted) {
+                        if (classificationResult != null && context.mounted) {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder:
-                                  (ctx) =>
-                                      ResultScreen(imagePath: croppedImage),
+                                  (ctx) => ResultScreen(
+                                    imagePath: classificationResult,
+                                  ),
                             ),
                           );
                         }
@@ -157,15 +159,19 @@ class HomeScreen extends ConsumerWidget {
                   PermissionStatus status = await Permission.camera.request();
 
                   if (status.isGranted) {
-                    final croppedImage = await ref
+                    final classificationResult = await ref
                         .read(imageProvider.notifier)
                         .pickImage(ImageSource.camera);
 
-                    if (croppedImage != null && context.mounted) {
+                    if (classificationResult != null && context.mounted) {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder:
-                              (ctx) => ResultScreen(imagePath: croppedImage),
+                              (ctx) => ProviderScope(
+                                child: ResultScreen(
+                                  imagePath: classificationResult,
+                                ),
+                              ),
                         ),
                       );
                     }

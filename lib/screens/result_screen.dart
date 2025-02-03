@@ -1,16 +1,17 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_wadai_detection/models/classification_result.dart';
 import 'package:flutter_wadai_detection/widgets/similar_item_list.dart';
 
-class ResultScreen extends StatelessWidget {
+class ResultScreen extends ConsumerWidget {
   const ResultScreen({super.key, required this.imagePath});
 
-  final File imagePath;
+  final ClassificationResult imagePath;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: Text('Detection Result')),
       body: Padding(
@@ -26,7 +27,7 @@ class ResultScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 image: DecorationImage(
-                  image: FileImage(imagePath),
+                  image: FileImage(imagePath.image),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -45,7 +46,7 @@ class ResultScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: Text(
-                          'Cake Name',
+                          imagePath.topClassificationLabel,
                           style: Theme.of(context).textTheme.titleLarge,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -57,7 +58,7 @@ class ResultScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: 50),
-            Expanded(child: SimilarItemList()),
+            Expanded(child: SimilarItemList(result: imagePath)),
           ],
         ),
       ),

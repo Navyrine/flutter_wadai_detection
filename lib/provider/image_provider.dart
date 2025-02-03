@@ -2,15 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_wadai_detection/models/classification_result.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
-class ImageNotifier extends StateNotifier<File?> {
+class ImageNotifier extends StateNotifier<ClassificationResult?> {
   ImageNotifier() : super(null);
 
-  File? pickedImage;
   Interpreter? interpreter;
   List<String>? labels;
 
@@ -25,8 +25,7 @@ class ImageNotifier extends StateNotifier<File?> {
     return labelData.split('\n').map((e) => e.trim()).toList();
   }
 
-  Future<File?> pickImage(ImageSource source) async {
-    File? tempImage;
+  Future<ClassificationResult?> pickImage(ImageSource source) async {
     try {
       final pickedImage = await ImagePicker().pickImage(
         source: source,
@@ -37,17 +36,15 @@ class ImageNotifier extends StateNotifier<File?> {
         return null;
       }
 
-      tempImage = File(pickedImage.path);
-      tempImage = await cropImage(imageFile: tempImage);
-      state = tempImage;
+      File image = File(pickedImage.path);
+      image = await cropImage(imageFile: image) ?? image;
 
-      if (tempImage != null) {
-        classifyImage(tempImage);
-      }
+      await classifyImage(image);
+
+      return state;
     } catch (error) {
       throw Exception(error);
     }
-    return tempImage;
   }
 
   Future<File?> cropImage({required File imageFile}) async {
@@ -57,11 +54,7 @@ class ImageNotifier extends StateNotifier<File?> {
         compressQuality: 100,
       );
 
-      if (croppedImg == null) {
-        return null;
-      } else {
-        return File(croppedImg.path);
-      }
+      return croppedImg != null ? File(croppedImg.path) : null;
     } catch (error) {
       throw Exception(error.toString());
     }
@@ -116,16 +109,16 @@ class ImageNotifier extends StateNotifier<File?> {
           (b["confidence"] as double).compareTo(a["confidence"] as double),
     );
 
-    List<Map<String, dynamic>> topPredictions = predictions.take(3).toList();
-
-    for (var prediction in topPredictions) {
-      print(
-        "Label: ${prediction["label"]}, Confidence: ${(prediction["confidence"] as double) * 100}%",
-      );
-    }
+    state = ClassificationResult(
+      image: image,
+      topClassificationLabel: predictions.first['label'],
+      topClassificationConfidence: predictions.first['confidence'],
+      otherClassification: predictions.sublist(1),
+    );
   }
 }
 
-final imageProvider = StateNotifierProvider<ImageNotifier, File?>(
-  (ref) => ImageNotifier(),
-);
+final imageProvider =
+    StateNotifierProvider<ImageNotifier, ClassificationResult?>(
+      (ref) => ImageNotifier(),
+    );
